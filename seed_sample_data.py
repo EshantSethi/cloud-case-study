@@ -31,7 +31,10 @@ def csrf_token(path):
 
 def post(path, data, token_page):
     data = dict(data, csrf_token=csrf_token(token_page))
-    resp = opener.open(BASE + path, urllib.parse.urlencode(data).encode(), timeout=120)
+    # Over HTTPS Flask-WTF also checks the Referer header (browsers send it automatically)
+    req = urllib.request.Request(BASE + path, urllib.parse.urlencode(data).encode(),
+                                 headers={'Referer': BASE + token_page})
+    resp = opener.open(req, timeout=120)
     return resp.geturl()
 
 
