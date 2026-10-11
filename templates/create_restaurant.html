@@ -13,6 +13,7 @@
     <h1>Add New Restaurant</h1>
 
     <form method="POST" action="{{ url_for('add_restaurant') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="mb-3">
           <label for="restaurant_name" class="form-label">Name</label>
           <input type="text" class="form-control" id="restaurant_name" name="restaurant_name">

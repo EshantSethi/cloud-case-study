@@ -21,6 +21,8 @@ else:
     app.config.from_object('azureproject.production')
 
 app.config.update(
+    # Secret used to sign CSRF tokens; injected as an env var on Render (never stored in code)
+    SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-only-secret-key'),
     SQLALCHEMY_DATABASE_URI=app.config.get('DATABASE_URI'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
 )
@@ -52,7 +54,6 @@ def create_restaurant():
     return render_template('create_restaurant.html')
 
 @app.route('/add', methods=['POST'])
-@csrf.exempt
 def add_restaurant():
     try:
         name = request.values.get('restaurant_name')
@@ -74,7 +75,6 @@ def add_restaurant():
         return redirect(url_for('details', id=restaurant.id))
 
 @app.route('/review/<int:id>', methods=['POST'])
-@csrf.exempt
 def add_review(id):
     try:
         user_name = request.values.get('user_name')
