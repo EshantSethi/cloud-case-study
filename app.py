@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from flask import Flask, redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, abort, redirect, render_template, request, send_from_directory, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
@@ -39,13 +39,15 @@ from models import Restaurant, Review
 @app.route('/', methods=['GET'])
 def index():
     print('Request for index page received')
-    restaurants = Restaurant.query.all()
-    return render_template('index.html', restaurants=restaurants)
+    restaurants = Restaurant.query.order_by(Restaurant.name).all()
+    return render_template('index.html', restaurants=restaurants, review_count=Review.query.count())
 
 @app.route('/<int:id>', methods=['GET'])
 def details(id):
     restaurant = Restaurant.query.where(Restaurant.id == id).first()
-    reviews = Review.query.where(Review.restaurant == id)
+    if restaurant is None:
+        abort(404)
+    reviews = Review.query.where(Review.restaurant == id).order_by(Review.review_date.desc()).all()
     return render_template('details.html', restaurant=restaurant, reviews=reviews)
 
 @app.route('/create', methods=['GET'])

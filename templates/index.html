@@ -1,72 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Restaurant List{% endblock %}
-{% block head %}
-    {{ super() }}
-    <style>
-      body {
-          min-height: 75rem;
-          padding-top: 4.5rem;
-      }
-
-      .score {
-        display: block;
-        font-size: 16px;
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .score-wrap {
-        display: inline-block;
-        position: relative;
-        height: 19px;
-      }
-      
-      .score .stars-active {
-        color: #EEBD01;
-        position: relative;
-        z-index: 10;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      
-      .score .stars-inactive {
-        color: grey;
-        position: absolute;
-        top: 0;
-        left: 0;
-        -webkit-text-stroke: initial;
-        /* overflow: hidden; */
-      }
-  </style>
-{% endblock %}
+{% block title %}Restaurants{% endblock %}
 {% block content %}
-      <h1>Restaurants</h1>
+    <section class="hero">
+        <div class="container">
+            <div class="eyebrow">Eat · Rate · Share</div>
+            <h1>Discover Chennai's favourite food spots</h1>
+            <p class="lead">Honest ratings and reviews from people who actually ate there. Add a place you love or tell others what to order.</p>
+            <div class="stat-row">
+                <div class="stat"><b>{{ restaurants|length }}</b><span>restaurants</span></div>
+                <div class="stat"><b>{{ review_count }}</b><span>reviews</span></div>
+                <div class="stat"><b><i class="fa-solid fa-lock fa-xs"></i> HTTPS</b><span>secure &amp; always on</span></div>
+            </div>
+        </div>
+    </section>
 
-      {% if True %}
-          <table class="table">
-              <thead>
-                  <tr>
-                      <th>Name</th>
-                      <th>Rating</th>
-                      <th class="text-end">Details</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for restaurant in restaurants %}
-                      <tr>
-                          <td>{{ restaurant.name }}</td>
-                          <td>{% include "star_rating.html" %}</td>
-                          <td class="text-end"><a href="{{ url_for('details', id=restaurant.id) }}" class="btn btn-sm btn-primary">Details</a></td>
-                      </tr>
-                  {% endfor %}
-              </tbody>
-          </table>
-      {% else %}
-          <p>No restaurants exist.  Select Add new restaurant to add one.</p>
-      {% endif %}
-
-      <div class="d-flex justify-content-end">
-              <a href="{{ url_for('create_restaurant') }}" class="btn btn-success px-4 gap-3">Add new restaurant</a>
-      </div>
+    <div class="container lift">
+        {% if restaurants %}
+            <div class="row g-4">
+                {% for restaurant in restaurants %}
+                    <div class="col-md-6 col-lg-4">
+                        <a class="r-card" href="{{ url_for('details', id=restaurant.id) }}">
+                            <div class="top">
+                                <div class="monogram mono-{{ restaurant.id % 4 }}">{{ restaurant.name[:1]|upper }}</div>
+                                <div>
+                                    <h3>{{ restaurant.name }}</h3>
+                                    <div class="addr"><i class="fa-solid fa-location-dot me-1"></i>{{ restaurant.street_address }}</div>
+                                </div>
+                            </div>
+                            <div class="desc">{{ restaurant.description }}</div>
+                            <div class="foot">
+                                {% include "star_rating.html" %}
+                                <span class="go">Reviews <i class="fa-solid fa-arrow-right fa-xs"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="panel empty">
+                <i class="fa-solid fa-bowl-food"></i>
+                <h2 class="h5">No restaurants yet</h2>
+                <p>Be the first to add a place.</p>
+                <a href="{{ url_for('create_restaurant') }}" class="btn btn-teal">Add new restaurant</a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

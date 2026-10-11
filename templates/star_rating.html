@@ -1,25 +1,15 @@
-{% if star_rating(restaurant.id)["review_count"] %}
-    <span class="score">
-        <div class="score-wrap align-top">
-            <span class="stars-active" style="width:{{ star_rating(restaurant.id)['stars_percent'] }}%">
-                <i class="fa fa-star" aria-hidden="true"></i>
-                <i class="fa fa-star" aria-hidden="true"></i>
-                <i class="fa fa-star" aria-hidden="true"></i>
-                <i class="fa fa-star" aria-hidden="true"></i>
-                <i class="fa fa-star" aria-hidden="true"></i>
+{% set sr = star_rating(restaurant.id) %}
+{% if sr["review_count"] %}
+    <span class="stars" title="{{ '%.1f'|format(sr['avg_rating']) }} out of 5">
+        <span class="track" aria-hidden="true">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <span class="fill" style="width:{{ sr['stars_percent'] }}%">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
             </span>
-        <span class="stars-inactive">
-                <i class="fa fa-star-o" aria-hidden="true"></i>
-                <i class="fa fa-star-o" aria-hidden="true"></i>
-                <i class="fa fa-star-o" aria-hidden="true"></i>
-                <i class="fa fa-star-o" aria-hidden="true"></i>
-                <i class="fa fa-star-o" aria-hidden="true"></i>
-        </span>        
-        </div>
-        <span class="align-top">
-            {{ star_rating(restaurant.id)["avg_rating"]|float }} ({{star_rating(restaurant.id)["review_count"]}} {% if star_rating(restaurant.id)["review_count"] == 1 %} review{% else %} reviews{% endif %})
         </span>
-    </span> 
+        <span class="val">{{ '%.1f'|format(sr['avg_rating']) }}</span>
+        <span class="cnt">({{ sr["review_count"] }} {{ "review" if sr["review_count"] == 1 else "reviews" }})</span>
+    </span>
 {% else %}
-  <span class="fst-italic">No ratings yet</span>
+    <span class="no-rating">No ratings yet</span>
 {% endif %}

@@ -2,41 +2,43 @@
 <html lang="en">
 <head>
     {% block head %}
-        <title>Flask web app with PostgreSQL in Azure - {% block title %}{% endblock %}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Chennai Bites - {% block title %}{% endblock %}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        {% endblock %}
+    {% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
-        <div class="container">
-          <a class="navbar-brand" href="/">
-            <img src="{{ url_for('static', filename='images/azure-icon.svg') }}" alt="" width="30" height="24" class="d-inline-block align-text-top">
-            Azure Restaurant Review
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">                
-            <ul class="navbar-nav mb-2 mb-md-0 ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="true">Azure Docs</a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdown07XL" data-bs-popper="none">
-                      <li><a class="dropdown-item" target="_blank" href="https://docs.microsoft.com/azure">Azure Docs Home</a></li>
-                      <li><a class="dropdown-item" target="_blank" href="#">Python Web App + Database Tutorial</a></li>
-                      <li><a class="dropdown-item" target="_blank" href="https://azure.microsoft.com/develop/python/">Python on Azure</a></li>
-                      <li><a class="dropdown-item" target="_blank" href="https://docs.microsoft.com/azure/developer/python">Python on Azure Developer Center</a></li>
-                  </ul>
-                </li>
-            </ul>
-          </div>
+    <nav class="app-nav">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-badge"><i class="fa-solid fa-utensils"></i></span>
+                <span>Chennai Bites<small>RESTAURANT REVIEWS</small></span>
+            </a>
+            <a href="{{ url_for('create_restaurant') }}" class="btn btn-saffron"><i class="fa-solid fa-plus me-1"></i> Add restaurant</a>
         </div>
-      </nav>
+    </nav>
 
-      <main class="container">    
+    <main>
         {% block content %}{% endblock %}
-      </main>            
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container d-flex flex-wrap justify-content-between gap-2">
+            <div>
+                <span class="tech"><i class="fa-solid fa-cloud"></i> Hosted on Render (PaaS) · Singapore</span>
+                <span class="tech"><i class="fa-brands fa-python"></i> Flask + gunicorn</span>
+                <span class="tech"><i class="fa-solid fa-database"></i> Managed PostgreSQL</span>
+            </div>
+            <div>Cloud Computing case study · based on Microsoft's open-source sample</div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>

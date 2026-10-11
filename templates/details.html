@@ -1,116 +1,110 @@
 {% extends "base.html" %}
-{% block title %}Restaurant Details{% endblock %}
-{% block head %}
-    {{ super() }}
-    <style>
-      body {
-          min-height: 75rem;
-          padding-top: 4.5rem;
-      }
-  </style>
-{% endblock %}
+{% block title %}{{ restaurant.name }}{% endblock %}
 {% block content %}
-  <h1>{{ restaurant.name }}</h1> 
-  <div class="row">
-      <div class="col-md-2 fw-bold">Street address:</div>
-      <div class="col">{{ restaurant.street_address }}</div>
-  </div>
-  <div class="row">
-      <div class="col-md-2 fw-bold">Description:</div>
-      <div class="col">{{ restaurant.description }}</div>                
-  </div>
-  <div class="row">
-      <div class="col-md-2 fw-bold">Rating:</div>
-      <div class="col"></div>                
-  </div>
-
-  <h4 class="mt-5">Reviews</h4>
-
-  <p>
-      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addReviewModal">
-          Add new review
-      </button>
-  </p>
-
-<!-- Button trigger modal -->
-    {% if reviews %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>User</th>
-                    <th>Rating</th>
-                    <th>Review</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for review in reviews %}
-                    <tr>
-                        <td>{{ review.review_date }}</td>
-                        <td>{{ review.user_name }}</td>
-                        <td>{{ review.rating }}</td>
-                        <td>{{ review.review_text }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No reviews of this restaurant yet.</p>
-    {% endif %}
-
-    <!-- Modal -->
-    <div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addReviewModalLabel">Add Review</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-              <form method="POST" action="{{ url_for('add_review', id=restaurant.id) }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-              <div class="modal-body">
-
-                <div class="mb-3">                        
-                    <label for="user_name" class="form-label fw-bold">Your name</label>
-                    <input type="text" class="form-control" id="user_name" name="user_name">
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label fw-bold">Rating</label>
-
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="rating" id="rating1" value="1">
-                        <label class="form-check-label" for="rating1">1</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
-                        <label class="form-check-label" for="rating2">2</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
-                        <label class="form-check-label" for="rating3">3</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
-                        <label class="form-check-label" for="rating3">4</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
-                        <label class="form-check-label" for="rating3">5</label>
-                      </div>
-                  </div>
-                  <div class="mb-3">
-                      <label for="review_text" class="form-label fw-bold">Comments</label>
-                      <input type="text" class="form-control" id="review_text" name="review_text">
-                  </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
-              </div>
-        </form>
+    {% set sr = star_rating(restaurant.id) %}
+    <section class="hero detail-hero">
+        <div class="container">
+            <a class="back-link" href="{{ url_for('index') }}"><i class="fa-solid fa-arrow-left me-1"></i> All restaurants</a>
+            <div class="d-flex align-items-center gap-3 mt-3">
+                <div class="monogram mono-{{ restaurant.id % 4 }}">{{ restaurant.name[:1]|upper }}</div>
+                <h1 class="m-0">{{ restaurant.name }}</h1>
+            </div>
+            <div class="meta mt-3">
+                <span><i class="fa-solid fa-location-dot me-1"></i>{{ restaurant.street_address }}</span>
+                <span><i class="fa-solid fa-utensils me-1"></i>{{ restaurant.description }}</span>
+            </div>
         </div>
-      </div>
+    </section>
+
+    <div class="container lift">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="panel score-card">
+                    {% if sr["review_count"] %}
+                        <div class="big">{{ '%.1f'|format(sr['avg_rating']) }}</div>
+                        <div class="my-2">{% include "star_rating.html" %}</div>
+                    {% else %}
+                        <div class="big">–</div>
+                        <div class="my-2 no-rating">No ratings yet</div>
+                    {% endif %}
+                    <button type="button" class="btn btn-teal w-100 mt-2" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+                        <i class="fa-solid fa-pen me-1"></i> Write a review
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="panel">
+                    <div class="section-head px-4 pt-4 pb-1">
+                        <h2>Reviews</h2>
+                        <span class="pill"><i class="fa-solid fa-comment"></i> {{ reviews|length }}</span>
+                    </div>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="review">
+                                <div class="avatar">{{ (review.user_name or "?")[:1]|upper }}</div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                                        <span class="who">{{ review.user_name }}</span>
+                                        <span class="when">{{ review.review_date.strftime("%d %b %Y, %I:%M %p") }}</span>
+                                    </div>
+                                    <span class="stars">
+                                        <span class="track" aria-hidden="true">
+                                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                            <span class="fill" style="width:{{ review.rating * 20 }}%">
+                                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                            </span>
+                                        </span>
+                                        <span class="visually-hidden">{{ review.rating }} out of 5</span>
+                                    </span>
+                                    <p>{{ review.review_text }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty">
+                            <i class="fa-regular fa-comment-dots"></i>
+                            <p class="mb-0">No reviews yet. Be the first to share your experience!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
+    <div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('add_review', id=restaurant.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="modal-header px-4">
+                        <h5 class="modal-title" id="addReviewModalLabel">Review {{ restaurant.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4">
+                        <div class="mb-3">
+                            <label class="form-label d-block">Your rating</label>
+                            <div class="star-picker" role="radiogroup" aria-label="Rating">
+                                {% for n in [5, 4, 3, 2, 1] %}
+                                    <input type="radio" name="rating" id="rating{{ n }}" value="{{ n }}" required>
+                                    <label for="rating{{ n }}" title="{{ n }} star{{ 's' if n > 1 }}"><i class="fa-solid fa-star"></i></label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user_name" class="form-label">Your name</label>
+                            <input type="text" class="form-control" id="user_name" name="user_name" maxlength="30" placeholder="e.g. Priya" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="review_text" class="form-label">Your review</label>
+                            <textarea class="form-control" id="review_text" name="review_text" rows="3" maxlength="500" placeholder="What did you order? How was it?" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer px-4">
+                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-teal">Post review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}
