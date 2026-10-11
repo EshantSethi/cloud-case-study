@@ -1,0 +1,28 @@
+# Render Blueprint = Infrastructure as Code for the PaaS deployment.
+# Creates: 1 managed PostgreSQL database + 1 Python web service, wired together.
+databases:
+  - name: reviews-db
+    plan: free
+    region: singapore
+    databaseName: app
+    user: app_user
+    ipAllowList: []          # no public access: only Render services on the private network can connect
+
+services:
+  - type: web
+    name: restaurant-reviews
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install Flask Flask-Migrate Flask-SQLAlchemy flask_wtf psycopg2-binary python-dotenv SQLAlchemy gunicorn
+    startCommand: flask db upgrade && gunicorn --workers 2 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: WEBSITE_HOSTNAME        # tells app.py to load the production config
+        value: render
+      - key: DATABASE_URL            # injected securely from the managed database (internal URL)
+        fromDatabase:
+          name: reviews-db
+          property: connectionString
